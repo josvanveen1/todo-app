@@ -1,7 +1,7 @@
 var app = angular.module('toDo', []);
 app.controller('toDoController', function($scope, $http) {
 
-    $http.get('/todo/api').then(function(response) {
+    $http.get('/todo/api/').then(function(response) {
         
         $scope.todoList = []; // Ensure todoList is initialized as an array.
 
@@ -16,8 +16,13 @@ app.controller('toDoController', function($scope, $http) {
         } else {
             console.error('Response data is not valid:', response.data);
         }
-
     });
+
+    $scope.saveData = function() {
+        var data = {text: $scope.todoInput, done: false}
+        $http.put('/todo/api', data)
+    };
+    
 
     $scope.todoAdd = function() {
         $scope.todoList.push({todoText: $scope.todoInput, done: false});
