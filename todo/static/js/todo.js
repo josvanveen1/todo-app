@@ -1,20 +1,15 @@
 var app = angular.module('toDo', []);
 app.controller('toDoController', function($scope, $http) {
+    $http.get('/todo/api').then(function(response) {
+        $scope.todoList = [];
+        for (var i = 0; i < response.data.length; i++) {
 
-    $http.get('/todo/api/').then(function(response) {
-        
-        $scope.todoList = []; // Ensure todoList is initialized as an array.
+            var todo = {};
+            todo.todoText = response.data[i].text
 
-        if (response.data && Array.isArray(response.data)) {
-            for (var i = 0; i < response.data.length; i++) {
-                var todo = {
-                    todoText: response.data[i].text,
-                    done: response.data[i].done
-                };
-                $scope.todoList.push(todo);
-            }
-        } else {
-            console.error('Response data is not valid:', response.data);
+            todo.done = response.data[i].done
+            todo.id = response.data[i].id
+            $scope.todoList.push(todo);
         }
     });
 
@@ -22,7 +17,6 @@ app.controller('toDoController', function($scope, $http) {
         var data = {text: $scope.todoInput, done: false}
         $http.put('/todo/api', data)
     };
-    
 
     $scope.todoAdd = function() {
         $scope.todoList.push({todoText: $scope.todoInput, done: false});
@@ -30,12 +24,15 @@ app.controller('toDoController', function($scope, $http) {
     };
 
     $scope.remove = function() {
-        var oldList = $scope.todoList;
-        $scope.todoList = [];
-        angular.forEach(oldList, function(element)  {
-            if (!element.done){ 
-                $scope.todoList.push(element);
+        oldList = $scope.todoList;
+        var newList = [];
+        for (var i=0; i<oldList.length; i++){
+            if (oldList[i].done){
+                $http.delete('/todo/api/' + oldList[i].id)
+            } else {
+                newList.push(oldList[i]);
             }
-        });
-    }
+        }
+        $scope.todoList = newList;
+    };
 })

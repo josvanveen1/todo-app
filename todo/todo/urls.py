@@ -24,6 +24,6 @@ from todo.views import ToDoListView, ToDoDetailView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", TemplateView.as_view(template_name='todo/index.html')),
-    path("todo/api/<int:pk>", ToDoDetailView.as_view()),
     path("todo/api", ToDoListView.as_view(), name='todo_api'),
+    path("todo/api/<int:pk>", ToDoDetailView.as_view(), name='todo_item_view'),
 ]
